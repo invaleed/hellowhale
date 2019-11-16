@@ -2,6 +2,7 @@ FROM nginx
 
 COPY wrapper.sh /
 
-COPY html /usr/share/nginx/html
+COPY default.conf /etc/nginx/conf.d/
+COPY html /usr/share/nginx/html/aqila
 
 CMD ["./wrapper.sh"]
