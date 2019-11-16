@@ -1,0 +1,54 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: boost-prod-hellowhale-deployment
+  namespace: prod
+  labels:
+    app: boost-prod-hellowhale
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      app: boost-prod-hellowhale
+  template:
+    metadata:
+      labels:
+        app: boost-prod-hellowhale
+    spec:
+      containers:
+      - name: boost-prod-hellowhale
+        image: karimunjawa.boost.id/axiata/boost-prod-hellowhale:latest
+        imagePullPolicy: Always
+        ports:
+        - name: backend-http
+          containerPort: 8080
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: boost-prod-hellowhale-service
+  namespace: prod
+  labels:
+    app: boost-prod-hellowhale
+  annotations:
+    service.beta.kubernetes.io/aws-load-balancer-backend-protocol: http
+    service.beta.kubernetes.io/aws-load-balancer-ssl-cert: arn:aws:acm:ap-southeast-1:986794076402:certificate/064e7696-9b42-4831-8f68-72b43b8a2941
+    service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    name: http
+    targetPort: backend-http
+  - port: 443
+    name: https
+    targetPort: backend-http
+  selector:
+    app: boost-prod-hellowhale
