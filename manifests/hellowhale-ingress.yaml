@@ -11,7 +11,7 @@ spec:
   - host: app.invaleed.web.id
     http:
       paths:
-      - path: /aqila
+      - path: /hellowhale
         backend:
           serviceName: hellowhale
           servicePort: 80
